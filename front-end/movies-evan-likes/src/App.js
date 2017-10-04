@@ -1,26 +1,31 @@
 import React, { Component } from 'react';
 import { getMovies, getReviews } from './moviesApi';
-import { sortObjectList } from './helpers';
+import { sortObjectList, decadeBuilder } from './helpers';
 
 class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
       movies: [],
+      years: [],
       searchTitle: '',
+      searchDecade: '',
       loading: true,
-      cached: false,
     }
   }
 
   componentDidMount () {
     const cachedStorage = localStorage.getItem("movies");
     if (cachedStorage) {
+      console.log("localStorage movie cache found.")
+      let cachedMovies = JSON.parse(cachedStorage);
       this.setState({
-        movies: JSON.parse(cachedStorage),
+        movies: cachedMovies,
+        years: this.findYears(cachedMovies),
         loading: false,
       })
     } else {
+      console.log("Load Movies with Reviews API request ran.")
       this.loadMoviesWithReviews();
     }
   }
@@ -35,32 +40,47 @@ class App extends Component {
         localStorage.setItem("movies", JSON.stringify(movies));
         this.setState({
           movies: sortObjectList(movies, "title"),
+          years: this.findYears(movies),
           loading: false,
         })
       })
     })
   }
 
-  updateSearch (e) {
-    const value = e.target.value.toLowerCase();
-    this.setState({
-      searchTitle: value,
+  findYears (movies) {
+    let years = [];
+    movies.map((movie) => {
+      years.push(movie.year);
     })
-
+    return years.sort();
   }
 
+  updateSearch (e) {
+    this.setState({
+      searchTitle: e.target.value.toLowerCase(),
+    })
+  }
+
+  updateDecade (e) {
+    this.setState({
+      searchDecade: e.target.value,
+    })
+  }
 
   render () {
     let filteredMovies = this.state.movies.filter((movie) => {
-        return movie.title.toLowerCase().indexOf(this.state.searchTitle) !== -1;
-    })
+      let floor, ceiling;
+      if (this.state.searchDecade) {
+        floor = this.state.searchDecade;
+        ceiling = this.state.searchDecade + 9;
+      } else {
+        floor = this.state.years[0];
+        ceiling = this.state.years[this.state.years.length - 1] + 9;
+      }
 
-    let moviesList = filteredMovies.map((movie) => {
-      return (
-        <li key={movie.id}>
-          {movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})
-        </li>
-      );
+      return movie.title.toLowerCase().indexOf(this.state.searchTitle) !== -1
+        && movie.year >= floor
+        && movie.year <= ceiling
     })
 
     if (this.state.loading) {
@@ -73,7 +93,7 @@ class App extends Component {
             <p className='app-description__content'>
               Below is a (not) comprehensive list of movies that Evan really
               likes.
-              <br>
+              <br />
               TODO:
               - Search filter validates 2 characters before filtering
             </p>
@@ -85,15 +105,30 @@ class App extends Component {
                 type="text"
                 value={this.state.searchTitle}
                 onChange={this.updateSearch.bind(this)}
-                placeholder="Search by Title"
-                />
+                placeholder="Search by Title" />
+
+              <select onChange={this.updateDecade.bind(this)}>
+                <option defaultValue value={''}>-</option>
+                {
+                  decadeBuilder(this.state.years).map((decade) => {
+                    return (<option value={decade} key={decade}>{decade}</option>);
+                  })
+                }
+              </select>
             </form>
 
             <ul>
-              {moviesList}
+              {
+                filteredMovies.map((movie) => {
+                  return (
+                    <li key={movie.id}>
+                      {movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})
+                    </li>
+                  );
+                })
+              }
             </ul>
           </div>
-
         </div>
       )
     }

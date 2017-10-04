@@ -14,4 +14,15 @@ const sortObjectList = (list, property) => {
   })
 };
 
-export { sortObjectList };
+const decadeBuilder = (years) => {
+  let decades = [];
+  years.sort();
+  let floor = Math.floor(years[0] / 10) * 10;
+  let ceiling = Math.ceil(years[years.length -1] / 10) * 10;
+  for (let decade=floor; decade<ceiling; decade+=10) {
+    decades.push(decade);
+  }
+  return decades;
+}
+
+export { sortObjectList, decadeBuilder };
