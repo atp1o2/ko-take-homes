@@ -7,6 +7,7 @@ class App extends Component {
     super(props);
     this.state = {
       movies: [],
+      searchTitle: '',
       loading: true,
       cached: false,
     }
@@ -40,10 +41,26 @@ class App extends Component {
     })
   }
 
+  updateSearch (e) {
+    const value = e.target.value.toLowerCase();
+    this.setState({
+      searchTitle: value,
+    })
+
+  }
+
 
   render () {
-    let moviesList = this.state.movies.map((movie) => {
-      return <li key={movie.id}>{movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})</li>;
+    let filteredMovies = this.state.movies.filter((movie) => {
+        return movie.title.toLowerCase().indexOf(this.state.searchTitle) !== -1;
+    })
+
+    let moviesList = filteredMovies.map((movie) => {
+      return (
+        <li key={movie.id}>
+          {movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})
+        </li>
+      );
     })
 
     if (this.state.loading) {
@@ -55,11 +72,23 @@ class App extends Component {
             <h1 className='app-description__title'>Movies Evan Likes!</h1>
             <p className='app-description__content'>
               Below is a (not) comprehensive list of movies that Evan really
-              likessss.
+              likes.
+              <br>
+              TODO:
+              - Search filter validates 2 characters before filtering
             </p>
           </div>
 
           <div className="app-main">
+            <form>
+              <input
+                type="text"
+                value={this.state.searchTitle}
+                onChange={this.updateSearch.bind(this)}
+                placeholder="Search by Title"
+                />
+            </form>
+
             <ul>
               {moviesList}
             </ul>
