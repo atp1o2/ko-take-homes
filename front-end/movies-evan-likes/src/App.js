@@ -73,15 +73,14 @@ class App extends Component {
       let floor, ceiling;
       if (this.state.searchDecade) {
         floor = this.state.searchDecade;
-        ceiling = this.state.searchDecade + 9;
+        ceiling = this.state.searchDecade.slice(0, -1) + 9;
       } else {
         floor = this.state.years[0];
-        ceiling = this.state.years[this.state.years.length - 1] + 9;
+        ceiling = this.state.years[this.state.years.length - 1];
       }
 
       return movie.title.toLowerCase().indexOf(this.state.searchTitle) !== -1
         && movie.year >= floor
-        // double check ceiling
         && movie.year <= ceiling
     })
 
