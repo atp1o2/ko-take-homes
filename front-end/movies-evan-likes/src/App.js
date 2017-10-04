@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getMovies, getReviews } from './moviesApi';
 import { sortObjectList, decadeBuilder } from './helpers';
+import Accordion from './Accordion';
 
 class App extends Component {
   constructor (props) {
@@ -80,6 +81,7 @@ class App extends Component {
 
       return movie.title.toLowerCase().indexOf(this.state.searchTitle) !== -1
         && movie.year >= floor
+        // double check ceiling
         && movie.year <= ceiling
     })
 
@@ -93,9 +95,6 @@ class App extends Component {
             <p className='app-description__content'>
               Below is a (not) comprehensive list of movies that Evan really
               likes.
-              <br />
-              TODO:
-              - Search filter validates 2 characters before filtering
             </p>
           </div>
 
@@ -120,10 +119,17 @@ class App extends Component {
             <ul>
               {
                 filteredMovies.map((movie) => {
+                  const header = (
+                    <div>{movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})</div>
+                  )
+                  const body = (
+                    <div>
+                      <img className="cover-img" src={movie["cover-url"]} alt="Movie Cover Art" />
+                      <p>{movie.review}</p>
+                    </div>
+                  )
                   return (
-                    <li key={movie.id}>
-                      {movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})
-                    </li>
+                    <Accordion header={header} body={body} key={movie.id} />
                   );
                 })
               }
