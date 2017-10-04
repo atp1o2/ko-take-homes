@@ -29,7 +29,7 @@ class App extends Component {
 
   render () {
     let moviesList = this.state.movies.map((movie) => {
-      return <li key={movie.id}><a href={movie.url}>{movie.title}</a></li>;
+      return <li key={movie.id}>{movie.score * 100}% <a href={movie.url}>{movie.title}</a> ({movie.year})</li>;
     })
 
     if (this.state.loading) {
