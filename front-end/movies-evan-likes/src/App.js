@@ -13,12 +13,25 @@ class App extends Component {
   }
 
   componentDidMount () {
+    const cachedStorage = localStorage.getItem("movies");
+    if (cachedStorage) {
+      this.setState({
+        movies: JSON.parse(cachedStorage),
+        loading: false,
+      })
+    } else {
+      this.loadMoviesWithReviews();
+    }
+  }
+
+  loadMoviesWithReviews () {
     getMovies((movies) => {
       getReviews((reviews) => {
         movies.map((movie) => {
           const reviewObj = reviews.filter(review => review["movie-id"] === movie["id"]);
           movie["review"] = reviewObj[0].review;
         })
+        localStorage.setItem("movies", JSON.stringify(movies));
         this.setState({
           movies: sortObjectList(movies, "title"),
           loading: false,
@@ -26,6 +39,7 @@ class App extends Component {
       })
     })
   }
+
 
   render () {
     let moviesList = this.state.movies.map((movie) => {
