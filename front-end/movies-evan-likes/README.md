@@ -53,6 +53,7 @@ Each # is a commit!
     - Takes lowest & highest #s in the list to set floor and ceiling
     - Filter by every decade within this range
   c. Fetch API data here
+    - Set movie and review state
     - Title & Decade searcher need to be listening to movie state
     - Iterate through the list of movies and create a temp html elements to pass in <Accordion header= body= />
 
