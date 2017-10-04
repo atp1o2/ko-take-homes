@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { getMovies, getReviews } from './moviesApi';
 import { sortObjectList, decadeBuilder } from './helpers';
 import Accordion from './Accordion';
@@ -21,7 +22,7 @@ class App extends Component {
       console.log("localStorage movie cache found.")
       let cachedMovies = JSON.parse(cachedStorage);
       this.setState({
-        movies: cachedMovies,
+        movies: sortObjectList(cachedMovies, "title"),
         years: this.findYears(cachedMovies),
         loading: false,
       })
@@ -85,7 +86,7 @@ class App extends Component {
     })
 
     if (this.state.loading) {
-      return <div>Loading...</div>;
+      return <div>Loading....</div>;
     } else {
       return (
         <div className='page'>
@@ -99,20 +100,30 @@ class App extends Component {
 
           <div className="app-main">
             <form>
-              <input
-                type="text"
-                value={this.state.searchTitle}
-                onChange={this.updateSearch.bind(this)}
-                placeholder="Search by Title" />
-
-              <select onChange={this.updateDecade.bind(this)}>
-                <option defaultValue value={''}>-</option>
-                {
-                  decadeBuilder(this.state.years).map((decade) => {
-                    return (<option value={decade} key={decade}>{decade}</option>);
-                  })
-                }
-              </select>
+              <fieldset>
+                <label>
+                  <span>Title Contains: </span>
+                  <input
+                    type="text"
+                    className="input-search"
+                    value={this.state.searchTitle}
+                    onChange={this.updateSearch.bind(this)}
+                    placeholder="Search by Title" />
+                </label>
+              </fieldset>
+              <fieldset>
+                <label>
+                  <span>Decade: </span>
+                  <select onChange={this.updateDecade.bind(this)}>
+                    <option defaultValue value={''}>-</option>
+                    {
+                      decadeBuilder(this.state.years).map((decade) => {
+                        return (<option value={decade} key={decade}>{decade}</option>);
+                      })
+                    }
+                  </select>
+                </label>
+              </fieldset>
             </form>
 
             <ul>
@@ -138,6 +149,13 @@ class App extends Component {
       )
     }
   }
+}
+
+App.propTypes = {
+  movies: PropTypes.array,
+  years: PropTypes.array,
+  searchTitle: PropTypes.string,
+  searchDecade: PropTypes.number,
 }
 
 export default App;

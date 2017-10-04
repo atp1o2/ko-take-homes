@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Accordion extends Component {
   constructor (props) {
@@ -30,6 +31,11 @@ class Accordion extends Component {
       </li>
     )
   }
+}
+
+Accordion.propTypes = {
+  header: PropTypes.element,
+  body: PropTypes.element,
 }
 
 export default Accordion;

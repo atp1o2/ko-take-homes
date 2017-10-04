@@ -29,9 +29,23 @@ html, body
   margin: 1rem 0;
 }
 
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0.5em 0;
+}
+
 ul {
   list-style: none;
   padding-left: 0;
+}
+
+.input-search {
+  padding: 0.5em;
+  width: 16em;
+  font-size: 16px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
 }
 
 .cover-img {
